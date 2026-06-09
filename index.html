@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollshop Store</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-bold text-indigo-600 tracking-wide">OLLSHOP STORE</h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-indigo-600 font-medium">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-indigo-600 font-medium">Produk</a>
+                </div>
+                <button onclick="toggleCartSidebar()" class="text-gray-700 font-medium cursor-pointer relative bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
+                    🛒 <span>Keranjang</span>
+                    <span id="cart-count" class="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-indigo-100 to-purple-100 py-12 text-center">
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-2">Koleksi Pakaian Terbaik & Terupdate</h2>
+        <p class="text-gray-600 text-lg">Temukan gaya fashion favoritmu di Ollshop Store.</p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <section id="featured-section" class="mb-12 bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-6 md:p-8 text-white shadow-xl hidden">
+            <span class="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Produk Terlaris Hari Ini!</span>
+            <div id="featured-container" class="mt-4 flex flex-col md:flex-row gap-6 items-center">
+                </div>
+        </section>
+        
+        <div class="mb-8 flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center border-b border-gray-200 pb-6">
+            <div class="flex gap-2 overflow-x-auto pb-2 lg:pb-0" id="filter-buttons">
+                <button onclick="filterCategory('all')" id="btn-all" class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors shrink-0">Semua Pakaian</button>
+                <button onclick="filterCategory('clothes')" id="btn-clothes" class="bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm font-medium px-4 py-2 rounded-full transition-colors shrink-0">Atasan / Baju</button>
+                <button onclick="filterCategory('shoes')" id="btn-shoes" class="bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm font-medium px-4 py-2 rounded-full transition-colors shrink-0">Sepatu & Sneakers</button>
+            </div>
+
+            <div class="w-full lg:w-72">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Cari produk idamanmu..." 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                />
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-12">
+            <p class="text-xl font-semibold text-gray-500 animate-pulse">Sedang memuat produk terbaik untukmu...</p>
+        </div>
+
+        <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
+            </div>
+    </main>
+
+    <div id="cart-sidebar" class="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 pointer-events-none opacity-0">
+        <div class="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 pointer-events-auto" id="cart-panel">
+            
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 id="sidebar-title" class="text-lg font-bold text-gray-800">Keranjang Belanja Belanja Belanja 🛒</h3>
+                <button onclick="toggleCartSidebar()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+
+            <div id="cart-view" class="flex-1 flex flex-col justify-between overflow-hidden">
+                <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-4">
+                    </div>
+                <div class="p-4 border-t bg-gray-50">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-gray-600 font-medium">Total Pembayaran:</span>
+                        <span class="cart-total-render text-xl font-black text-indigo-600">Rp 0</span>
+                    </div>
+                    <button onclick="goToCheckoutView()" id="btn-checkout-start" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors cursor-pointer text-center">
+                        Proses Ke Pembayaran 💳
+                    </button>
+                </div>
+            </div>
+
+            <form id="checkout-view" onsubmit="processPayment(event)" class="flex-1 flex flex-col justify-between overflow-hidden hidden bg-white">
+                <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <button type="button" onclick="goToCartView()" class="text-xs font-semibold text-indigo-600 hover:underline mb-2 flex items-center gap-1">← Kembali ke Keranjang</button>
+                    
+                    <h4 class="font-bold text-gray-700 text-sm border-b pb-1">Informasi Pengiriman</h4>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1 font-medium">Nama Lengkap</label>
+                        <input type="text" id="pay-name" required class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-indigo-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1 font-medium">Nomor WhatsApp</label>
+                        <input type="tel" id="pay-phone" required placeholder="08xxxxxxxxxx" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-indigo-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1 font-medium">Alamat Lengkap</label>
+                        <textarea id="pay-address" required rows="2" class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-indigo-500 bg-white"></textarea>
+                    </div>
+
+                    <h4 class="font-bold text-gray-700 text-sm border-b pt-2 pb-1">Metode Pembayaran</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="payment-method" value="QRIS / E-Wallet" checked class="text-indigo-600 focus:ring-indigo-500">
+                            <div class="text-sm">
+                                <p class="font-semibold text-gray-800">QRIS / E-Wallet</p>
+                                <p class="text-xs text-gray-400">Otomatis (Dana, OVO, LinkAja, ShopeePay)</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="payment-method" value="Transfer Bank (BCA/Mandiri)" class="text-indigo-600 focus:ring-indigo-500">
+                            <div class="text-sm">
+                                <p class="font-semibold text-gray-800">Transfer Bank</p>
+                                <p class="text-xs text-gray-400">Manual (BCA, Mandiri, BRI, BNI)</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 border border-gray-200 rounded cursor-pointer hover:bg-gray-50">
+                            <input type="radio" name="payment-method" value="COD (Bayar di Tempat)" class="text-indigo-600 focus:ring-indigo-500">
+                            <div class="text-sm">
+                                <p class="font-semibold text-gray-800">COD (Bayar di Tempat)</p>
+                                <p class="text-xs text-gray-400">Bayar tunai saat kurir sampai rumah</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t bg-gray-50">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-gray-600 text-xs font-medium">Total Ditagih:</span>
+                        <span class="cart-total-render text-lg font-black text-indigo-600">Rp 0</span>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors cursor-pointer text-center">
+                        Konfirmasi Pembayaran ✔
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative p-6">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            <div id="modal-content" class="flex flex-col md:flex-row gap-6">
+                </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white text-center py-6 mt-12">
+        <p>&copy; 2026 Ollshop Store. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
