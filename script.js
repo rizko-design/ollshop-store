@@ -407,7 +407,7 @@ updateCartUI = function() {
     });
 }
 // Jalur WhatsApp: Otomatis menyusun teks pesanan untuk dikirim ke nomor WA Anda
-const nomorWA = "085789650048"; // GANTI dengan nomor WhatsApp Anda (awali dengan 62, bukan 0)
+const nomorWA = "+6285789650048"; // GANTI dengan nomor WhatsApp Anda (awali dengan 62, bukan 0)
     
 let teksPesanan = `Halo Admin Ollshop Store, saya ingin memesan:\n\n`;
 cart.forEach(item => {
